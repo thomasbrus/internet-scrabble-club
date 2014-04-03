@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Thomas Brus"]
   spec.email         = ["thomas.brus@me.com"]
   spec.summary       = %q{Fetches scrabble games from the Internet Scrabble Club.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/thomasbrus/scrabble-scraper"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
