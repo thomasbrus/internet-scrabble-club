@@ -17,12 +17,20 @@ module InternetScrabbleClub
     finalizer :finalize
 
     def initialize(host = '50.97.175.138', port = 1330)
-      @socket = TCPSocket.new('50.97.175.138', 1330)
+      @socket = TCPSocket.new(host, port)
       async.run
     end
 
     def authenticate(nickname, password)
       send_message(:login, nickname, password, 1871, 'HVyHL.YxgQs0EtEtYYQ2uuEm?icRMu0')
+    end
+
+    def request_history(nickname)
+      send_message(:history, nickname)
+    end
+
+    def examine_game(nickname, game_number)
+      send_message(:examine, 'HISTORY', nickname, game_number)
     end
 
     def run
@@ -41,8 +49,8 @@ module InternetScrabbleClub
     end
 
     private def send_message(command, *arguments)
-      formatted_message = construct_message(command, *arguments)
-      @socket.write("\0" << formatted_message.length << formatted_message)
+      message = construct_message(command, *arguments)
+      @socket.write("\0" << message.length << message)
       publish(:message_sent, message)
     end
 
