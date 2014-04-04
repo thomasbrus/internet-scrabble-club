@@ -11,6 +11,9 @@ module InternetScrabbleClub
     include Celluloid::IO
     include Celluloid::Notifications
 
+    # prepend KeepAlive
+    # prepend EchoPing
+
     finalizer :finalize
 
     def initialize(host = '50.97.175.138', port = 1330)
