@@ -24,4 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "parslet", "~> 1.5.0"
   spec.add_dependency "mongo_mapper", "~> 0.12.0"
   spec.add_dependency "bson_ext", "~> 1.10.0"
+  spec.add_dependency "descendants_tracker", "~> 0.0.4"
 end
