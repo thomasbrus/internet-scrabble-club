@@ -56,9 +56,9 @@ module InternetScrabbleClub
 
     def handle_incoming_message(message)
       parsed_message = @message_parser.parse(message)
-      constructed_message = @message_transformer.apply(parsed_message)
-      callback = @callbacks.dequeue(constructed_message.command.to_sym) { proc {} }
-      callback.call(constructed_message)
+      deserialized_message = @message_transformer.apply(parsed_message)
+      callback = @callbacks.dequeue(deserialized_message.command.to_sym) { proc {} }
+      callback.call(deserialized_message)
     rescue Parslet::ParseFailed
       Logger.debug("Failed to parse message: #{message}")
     end
