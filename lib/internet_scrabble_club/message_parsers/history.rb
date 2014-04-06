@@ -1,10 +1,14 @@
-require_relative '../message_parser'
+require_relative 'base'
 
 module InternetScrabbleClub
   module MessageParsers
 
-    class History < MessageParser
+    class History < Base
       rule(:command) { str('HISTORY') }
+
+      rule(:arguments) do
+        seperated [nickname.as(:nickname), (entry >> space?).repeat(1).as(:entries)]
+      end
 
       rule(:entry) do
         seperated [
@@ -13,14 +17,6 @@ module InternetScrabbleClub
           dictionary, minus.maybe >> integer, date.as(:date)
         ]
       end
-
-      rule(:command_with_arguments) do
-        seperated [
-          command, nickname.as(:nickname), (entry >> space?).repeat(1).as(:entries)
-        ]
-      end
-
-      root(:command_with_arguments)
     end
 
   end
