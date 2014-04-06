@@ -1,4 +1,5 @@
 require 'socket'
+
 require 'celluloid/io'
 require 'celluloid/autostart'
 
@@ -54,17 +55,12 @@ module InternetScrabbleClub
     end
 
     def handle_incoming_message(message)
-      begin
-        parsed_message = @message_parser.parse(message)
-        puts "Parsed: #{parsed_message}"
-      rescue Parslet::ParseFailed
-        puts "Failed to parse: #{message}"
-        parsed_message = { command: 'UNKNOWN', arguments: [] }
-      end
-
+      parsed_message = @message_parser.parse(message)
       constructed_message = @message_transformer.apply(parsed_message)
       callback = @callbacks.dequeue(constructed_message.command.to_sym) { proc {} }
       callback.call(constructed_message)
+    rescue Parslet::ParseFailed
+      Logger.debug("Failed to parse message: #{message}")
     end
 
     def finalize
