@@ -12,6 +12,7 @@ module InternetScrabbleClub
       end
 
       def to_s
+        # TODO: Move to request/base.rb
         "0 #{([command.upcase] + arguments).join(' ')}"
       end
     end
