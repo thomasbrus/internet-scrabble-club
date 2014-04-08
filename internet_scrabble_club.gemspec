@@ -22,7 +22,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "celluloid-io", "~> 0.15.0"
   spec.add_dependency "parslet", "~> 1.5.0"
-  spec.add_dependency "mongo_mapper", "~> 0.12.0"
-  spec.add_dependency "bson_ext", "~> 1.10.0"
   spec.add_dependency "descendants_tracker", "~> 0.0.4"
+  spec.add_dependency "events", "~> 0.9.8"
+  spec.add_dependency "anima", "~> 0.2.0"
+  spec.add_dependency "middleware", "~> 0.1.0"
 end
