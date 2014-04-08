@@ -2,8 +2,12 @@ module InternetScrabbleClub
   class Client
 
     module EchoPing
-      def handle_message(message)
-        super and (send_message(:ping, 'REPLY') if message =~ /0 PING REPLY$/)
+      def initialize(*args, &block)
+        super; @event_emitter.on(:message) do |message|
+          if Messages::Response::Ping === message
+            send_message(Messages::Request::Ping.new(message.action))
+          end
+        end
       end
     end
 
