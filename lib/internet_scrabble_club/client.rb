@@ -3,12 +3,16 @@ require 'socket'
 require 'celluloid/io'
 require 'celluloid/autostart'
 
+require 'events'
+require 'middleware'
+
+require_relative 'multi_queue'
+
 require_relative 'client/echo_ping'
 require_relative 'client/keep_alive'
 
-require_relative 'multi_queue'
-require_relative 'message_parsers'
-require_relative 'message_transformer'
+require_relative 'messages'
+require_relative 'client/middleware'
 
 module InternetScrabbleClub
 
@@ -16,64 +20,58 @@ module InternetScrabbleClub
     include Celluloid::IO
 
     prepend EchoPing
-    # prepend KeepAlive
+    prepend KeepAlive
 
     finalizer :finalize
 
+    attr_writer :socket
+    attr_writer :command_callback_queue, :event_emitter
+    attr_writer :message_parser, :message_transformer
+
     def initialize(host = '50.97.175.138', port = 1330)
-      @callbacks = MultiQueue.new
-      @message_parser = MessageParsers::Base.new
-      @message_transformer = MessageTransformer.new
       @socket = TCPSocket.new(host, port)
+
+      @command_callback_queue = MultiQueue.new
+
+      @event_emitter = Events::EventEmitter.new
+      @event_emitter.on(:message) { |message| yield_command_callback(message) }
+
       async.run
     end
 
-    def authenticate(nickname, password)
-      send_message(:login, nickname, password, 1871, 'HVyHL.YxgQs0EtEtYYQ2uuEm?icRMu0')
-    end
-
-    def request_history(nickname, &callback)
-      @callbacks.enqueue(:history, callback)
-      send_message(:history, nickname)
-    end
-
-    def examine_game(nickname, game_number, &callback)
-      @callbacks.enqueue(:examine, callback)
-      send_message(:examine, 'HISTORY', nickname, game_number)
-    end
-
-    def find_online_users(&callback)
-      @callbacks.enqueue(:who, callback)
-      send_message(:who)
-    end
-
     def run
-      loop do
-        message_length = @socket.getc.ord * 256 + @socket.getc.ord
-        async.handle_incoming_message(@socket.read(message_length))
+      loop { middleware.call({}) }
+    end
+
+    def middleware
+      @middleware ||= ::Middleware::Builder.new.tap do |mw|
+        mw.use(Middleware::Read, @socket)
+        mw.use(Middleware::Parse)
+        mw.use(Middleware::Transform)
+        mw.use(Middleware::Emit, @event_emitter)
       end
     end
 
-    def handle_incoming_message(message)
-      parsed_message = @message_parser.parse(message)
-      deserialized_message = @message_transformer.apply(parsed_message)
-      callback = @callbacks.dequeue(deserialized_message.command.to_sym) { proc {} }
-      callback.call(deserialized_message)
-    rescue Parslet::ParseFailed
-      Logger.debug("Failed to parse message: #{message}")
+    def on_message(&callback)
+      @event_emitter.on(:message, &callback)
+    end
+
+    def authenticate(nickname, password, &callback)
+      send_message(Messages::Request::Login.new(nickname, password), &callback)
+    end
+
+    def send_message(message, &callback)
+      @command_callback_queue.enqueue(message.command, callback) unless callback.nil?
+      @socket.write("\0" << message.to_s.length << message.to_s)
     end
 
     def finalize
       @socket.close if @socket
     end
 
-    private def send_message(command, *arguments)
-      message = construct_message(command, *arguments)
-      @socket.write("\0" << message.length << message)
-    end
-
-    private def construct_message(command, *arguments)
-      "0 #{([command.upcase] + arguments).join(' ')}"
+    private def yield_command_callback(message)
+      command_callback = @command_callback_queue.dequeue(message.command) { proc {} }
+      command_callback.call(message)
     end
   end
 
