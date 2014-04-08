@@ -9,6 +9,7 @@ module InternetScrabbleClub
 
         def call(env)
           @event_emitter.emit(:message, env[:message])
+          @stack.call(env)
         end
       end
 

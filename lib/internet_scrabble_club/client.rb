@@ -24,15 +24,12 @@ module InternetScrabbleClub
 
     finalizer :finalize
 
-    attr_writer :socket
+    attr_writer :socket, :middleware
     attr_writer :command_callback_queue, :event_emitter
-    attr_writer :message_parser, :message_transformer
 
     def initialize(host = '50.97.175.138', port = 1330)
       @socket = TCPSocket.new(host, port)
-
       @command_callback_queue = MultiQueue.new
-
       @event_emitter = Events::EventEmitter.new
       @event_emitter.on(:message) { |message| yield_command_callback(message) }
 
@@ -41,15 +38,6 @@ module InternetScrabbleClub
 
     def run
       loop { middleware.call({}) }
-    end
-
-    def middleware
-      @middleware ||= ::Middleware::Builder.new.tap do |mw|
-        mw.use(Middleware::Read, @socket)
-        mw.use(Middleware::Parse)
-        mw.use(Middleware::Transform)
-        mw.use(Middleware::Emit, @event_emitter)
-      end
     end
 
     def on_message(&callback)
@@ -72,6 +60,15 @@ module InternetScrabbleClub
     private def yield_command_callback(message)
       command_callback = @command_callback_queue.dequeue(message.command) { proc {} }
       command_callback.call(message)
+    end
+
+    private def middleware
+      @middleware ||= ::Middleware::Builder.new.tap { |mw|
+        mw.use(Middleware::Read, @socket)
+        mw.use(Middleware::Parse)
+        mw.use(Middleware::Transform)
+        mw.use(Middleware::Emit, @event_emitter)
+      }
     end
   end
 
