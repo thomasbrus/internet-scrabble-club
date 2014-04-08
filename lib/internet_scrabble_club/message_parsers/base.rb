@@ -10,14 +10,12 @@ module InternetScrabbleClub
       root(:command_with_arguments)
 
       rule(:command_with_arguments) do
-        (self.class.descendants.map(&:new).reduce(:|)) or
-        (prefix >> command.as(:command) >> space >> arguments.as(:arguments))
+        descendant_parsers.reduce(:|) or
+        (seperated [digit, command.as(:command), arguments.as(:arguments)])
       end
 
       rule(:space) { match('\s') }
       rule(:space?) { space.maybe }
-
-      rule(:prefix) { str('0 ') }
 
       rule(:colon) { str(':') }
       rule(:semicolon) { str(';') }
@@ -38,9 +36,15 @@ module InternetScrabbleClub
         str('SWL') | str('PARO') | str('MULTI')
       end
 
+      rule(:sentence) { match['^.'].repeat(1) >> str('.') }
+
       def seperated(sequence, seperator = space)
         seperators = Array.new(sequence.length - 1) { seperator }
         sequence.zip(seperators).flatten(1).compact.inject(:>>)
+      end
+
+      def descendant_parsers
+        @descendant_parsers ||= self.class.descendants.map(&:new)
       end
     end
 
