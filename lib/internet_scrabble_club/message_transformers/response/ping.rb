@@ -6,8 +6,8 @@ module InternetScrabbleClub
     module Response
 
       class Ping < Base
-        rule(command: 'PING', arguments: subtree(:arguments)) do
-          Messages::Response::Ping.new(arguments)
+        rule(command: 'PING', sub_command: simple(:sub_command)) do
+          Messages::Response::Ping.new(action: sub_command)
         end
       end
 
