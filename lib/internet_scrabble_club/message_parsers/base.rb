@@ -37,8 +37,8 @@ module InternetScrabbleClub
 
       rule(:digit) { match['0-9'] }
       rule(:integer) { digit.repeat(1) }
+      rule(:word) { (digit | alpha | match['_-']).repeat(1) }
 
-      rule(:nickname) { match['A-Za-z0-9_-'].repeat(1, 10) }
 
       rule(:month_day) { digit.repeat(1, 2) }
       rule(:abbreviated_month) { match['A-Z'] >> match['a-z'].repeat(2, 2) }
