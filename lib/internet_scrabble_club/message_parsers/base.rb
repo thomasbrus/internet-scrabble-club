@@ -7,12 +7,26 @@ module InternetScrabbleClub
     class Base < Parslet::Parser
       extend DescendantsTracker
 
-      root(:command_with_arguments)
+      root(:message)
 
-      rule(:command_with_arguments) do
-        descendant_parsers.reduce(:|) or
-        (seperated [digit, command.as(:command), arguments.as(:arguments)])
-      end
+      rule(:message) { descendant_parsers.reduce(:|) or (digit >> space >>
+        ( command_with_sub_command_and_arguments |
+          command_with_arguments | command_with_sub_command)) }
+
+      rule(:command_with_arguments) { command.as(:command) >> space >>
+        arguments.as(:arguments) }
+
+      rule(:command_with_sub_command_and_arguments) { command_with_sub_command >>
+        space >> arguments.as(:arguments) }
+
+      rule(:command_with_sub_command) { command.as(:command) >>
+        space >> sub_command.as(:sub_command) }
+
+      rule(:command) { nothing }
+      rule(:sub_command) { nothing }
+      rule(:arguments) { nothing }
+
+      rule(:nothing) { str('') }
 
       rule(:space) { match('\s') }
       rule(:space?) { space.maybe }
