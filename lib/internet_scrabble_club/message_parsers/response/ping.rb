@@ -6,7 +6,7 @@ module InternetScrabbleClub
 
       class Ping < Base
         rule(:command) { str('PING') }
-        rule(:arguments) { str('REPLY').as(:action) }
+        rule(:sub_command) { str('REPLY') }
       end
 
     end
