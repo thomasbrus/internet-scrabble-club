@@ -31,6 +31,8 @@ module InternetScrabbleClub
       rule(:space) { str(' ') }
       rule(:space?) { space.maybe }
 
+      rule(:newline) { match('\n') }
+
       rule(:colon) { str(':') }
       rule(:semicolon) { str(';') }
       rule(:minus) { str('-') }
