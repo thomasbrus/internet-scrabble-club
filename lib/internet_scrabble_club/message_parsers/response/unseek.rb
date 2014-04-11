@@ -6,7 +6,7 @@ module InternetScrabbleClub
 
       class Unseek < Base
         rule(:command) { str('UNSEEK') }
-        rule(:arguments) { nickname.as(:nickname) }
+        rule(:arguments) { word.as(:nickname) }
       end
 
     end
