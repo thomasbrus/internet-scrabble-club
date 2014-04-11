@@ -52,7 +52,7 @@ module InternetScrabbleClub
 
       rule(:sentence) { match['^.'].repeat(1) >> str('.') }
 
-      def seperated(sequence, seperator = space)
+      def join(sequence, seperator = space)
         seperators = Array.new(sequence.length - 1) { seperator }
         sequence.zip(seperators).flatten(1).compact.inject(:>>)
       end
