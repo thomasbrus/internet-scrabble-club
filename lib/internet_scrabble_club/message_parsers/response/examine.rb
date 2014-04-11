@@ -11,7 +11,7 @@ module InternetScrabbleClub
         rule(:arguments) { join([nothing, stats, settings,
             player_info.as(:first_player_info), plays.as(:first_player_plays), str('STOP'),
             player_info.as(:second_player_info), plays.as(:second_player_plays), str('STOP'),
-            nothing ], newline_with_whitespace) }
+            nothing], newline_with_whitespace) }
 
         rule(:newline_with_whitespace) { space.repeat >> newline >> space.repeat }
 
@@ -19,7 +19,7 @@ module InternetScrabbleClub
         rule(:settings) { join [int, int, int, int.as(:dictionary_code)] }
 
         rule(:player_info) { join [word.as(:nickname), int.as(:rating),
-            word.as(:initial_rack), int.as(:final_score)] }
+            rack.as(:initial_rack), int.as(:final_score)] }
 
         rule(:plays) { ((move | change | pass) >> space?).repeat }
 
