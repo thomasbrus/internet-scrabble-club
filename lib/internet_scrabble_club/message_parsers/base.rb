@@ -51,7 +51,7 @@ module InternetScrabbleClub
       rule(:month_day) { digit.repeat(1, 2) }
       rule(:abbreviated_month) { match['A-Z'] >> match['a-z'].repeat(2, 2) }
       rule(:short_year) { digit >> digit }
-      rule(:date) { seperated [month_day, abbreviated_month, short_year], colon  }
+      rule(:date) { join [month_day, abbreviated_month, short_year], colon  }
 
       rule(:dictionary) do
         str('TWL') | str('SOWPODS') | str('ODS') | str('LOC') |
