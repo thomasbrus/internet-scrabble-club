@@ -53,12 +53,8 @@ module InternetScrabbleClub
       rule(:short_year) { digit >> digit }
       rule(:date) { join [month_day, abbreviated_month, short_year], colon  }
 
-      rule(:dictionary) do
-        str('TWL') | str('SOWPODS') | str('ODS') | str('LOC') |
-        str('SWL') | str('PARO') | str('MULTI')
-      end
-
-      rule(:sentence) { match['^.'].repeat(1) >> str('.') }
+      rule(:dictionary) { str('TWL') | str('SOWPODS') | str('ODS') | str('LOC') |
+        str('SWL') | str('PARO') | str('MULTI') }
 
       def join(sequence, seperator = space)
         seperators = Array.new(sequence.length - 1) { seperator }
