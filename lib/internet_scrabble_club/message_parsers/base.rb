@@ -57,7 +57,7 @@ module InternetScrabbleClub
         sequence.zip(seperators).flatten(1).compact.inject(:>>)
       end
 
-      def descendant_parsers
+      private def descendant_parsers
         @descendant_parsers ||= self.class.descendants.map(&:new)
       end
     end
