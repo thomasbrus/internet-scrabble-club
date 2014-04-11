@@ -45,6 +45,8 @@ module InternetScrabbleClub
       rule(:word) { (digit | alpha | match['_-']).repeat(1) }
       rule(:sentence) { match['^.'].repeat(1) >> str('.') }
 
+      rule(:tiles) { (alpha | str('?')).repeat(1) }
+      rule(:rack) { null | tiles }
 
       rule(:month_day) { digit.repeat(1, 2) }
       rule(:abbreviated_month) { match['A-Z'] >> match['a-z'].repeat(2, 2) }
