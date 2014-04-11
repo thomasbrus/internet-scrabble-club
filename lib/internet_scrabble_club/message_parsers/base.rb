@@ -43,6 +43,7 @@ module InternetScrabbleClub
       rule(:null) { str('---') }
 
       rule(:word) { (digit | alpha | match['_-']).repeat(1) }
+      rule(:sentence) { match['^.'].repeat(1) >> str('.') }
 
 
       rule(:month_day) { digit.repeat(1, 2) }
