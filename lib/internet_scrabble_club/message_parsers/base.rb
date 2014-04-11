@@ -28,7 +28,7 @@ module InternetScrabbleClub
 
       rule(:nothing) { str('') }
 
-      rule(:space) { match('\s') }
+      rule(:space) { str(' ') }
       rule(:space?) { space.maybe }
 
       rule(:colon) { str(':') }
