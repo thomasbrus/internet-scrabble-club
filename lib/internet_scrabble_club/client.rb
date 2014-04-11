@@ -49,7 +49,7 @@ module InternetScrabbleClub
     end
 
     def send_message(message, &callback)
-      @command_callback_queue.enqueue(message.command, callback) unless callback.nil?
+      @command_callback_queue.enqueue(message.command, callback)
       @socket.write("\0" << message.to_s.length << message.to_s)
     end
 
