@@ -6,18 +6,10 @@ module InternetScrabbleClub
 
       class History < Base
         rule(:command) { str('HISTORY') }
-
-        rule(:arguments) do
-          nickname.as(:subject) >> space >> (entry.as(:entry) >> space?).repeat(1).as(:entries)
-        end
-
-        rule(:entry) do
-          seperated [
-            digit.as(:index),
-            integer, nickname.as(:first_player), integer, nickname.as(:second_player),
-            dictionary, minus.maybe >> integer, date.as(:date)
-          ]
-        end
+        rule(:arguments) { nickname.as(:subject) >> space >> entries.as(:entries) }
+        rule(:entries) { (entry.as(:entry) >> space?).repeat(1) }
+        rule(:entry) { join [digit.as(:index), players, dictionary, int, date.as(:date)] }
+        rule(:players) { join [int, nickname.as(:first_player), int, nickname.as(:second_player)] }
       end
 
     end
