@@ -38,7 +38,10 @@ module InternetScrabbleClub
       rule(:minus) { str('-') }
 
       rule(:digit) { match['0-9'] }
-      rule(:integer) { digit.repeat(1) }
+      rule(:alpha) { match['A-Za-z'] }
+      rule(:int) { minus.maybe >> digit.repeat(1) }
+      rule(:null) { str('---') }
+
       rule(:word) { (digit | alpha | match['_-']).repeat(1) }
 
 
