@@ -10,14 +10,14 @@ module InternetScrabbleClub
       end
 
       rule({ date: simple(:date), dictionary_code: simple(:dictionary_code),
-        first_player_info: subtree(:first_player_info),
+        first_player_setup: subtree(:first_player_setup),
         first_player_plays: subtree(:first_player_plays),
-        second_player_info: subtree(:second_player_info),
+        second_player_setup: subtree(:second_player_setup),
         second_player_plays: subtree(:second_player_plays)
       }) do
         { date: Date.parse(date.to_s), dictionary_code: dictionary_code,
-          first_player: OpenStruct.new(first_player_info),
-          second_player: OpenStruct.new(second_player_info),
+          first_player: OpenStruct.new(first_player_setup),
+          second_player: OpenStruct.new(second_player_setup),
           plays: first_player_plays.zip(second_player_plays).flatten(1),
         }
       end

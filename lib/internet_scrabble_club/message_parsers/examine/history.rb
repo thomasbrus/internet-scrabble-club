@@ -7,8 +7,8 @@ module InternetScrabbleClub
       rule(:sub_command) { str('HISTORY') }
 
       rule(:arguments) { join([stats, settings,
-          player_info.as(:first_player_info), plays.as(:first_player_plays), str('STOP'),
-          player_info.as(:second_player_info), plays.as(:second_player_plays), str('STOP'),
+          player_setup.as(:first_player_setup), plays.as(:first_player_plays), str('STOP'),
+          player_setup.as(:second_player_setup), plays.as(:second_player_plays), str('STOP'),
           nothing], newline_with_whitespace) }
 
       rule(:newline_with_whitespace) { space.repeat >> newline >> space.repeat }
@@ -16,7 +16,7 @@ module InternetScrabbleClub
       rule(:stats) { int >> space >> date.as(:date) }
       rule(:settings) { join [int, int, int, int.as(:dictionary_code)] }
 
-      rule(:player_info) { join [word.as(:nickname), int.as(:rating),
+      rule(:player_setup) { join [word.as(:nickname), int.as(:rating),
           rack.as(:initial_rack), int.as(:final_score) | null] }
 
       rule(:plays) { ((move | change | pass) >> space?).repeat }
