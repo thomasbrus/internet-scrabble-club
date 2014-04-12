@@ -22,7 +22,7 @@ module InternetScrabbleClub
       rule(:plays) { ((move | change | pass) >> space?).repeat }
 
       rule(:move) { join [str('MOVE').as(:type), position.as(:position),
-          tiles.as(:word), int.as(:score), int, int, rack.as(:rack), int] }
+          tiles.as(:word), int.as(:score), int, int, dashes | rack.as(:rack), int] }
 
       rule(:change) { join [str('CHANGE').as(:type), rack.as(:rack),
           int, int, int.as(:swap_count) | dashes] }
