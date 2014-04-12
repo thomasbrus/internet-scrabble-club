@@ -27,9 +27,18 @@ module InternetScrabbleClub
       rule(:change) { join [str('CHANGE').as(:type), rack.as(:rack),
           int, int, int.as(:swap_count) | dashes] }
 
-      rule(:pass) { join [str('PAS').as(:type), int, int, word] }
+      rule(:pass) { join [str('PAS').as(:type), int, int, dashes |
+        suggestion.as(:suggestion)] }
 
-      rule(:position) { horizontal_position.as(:horizontal) | vertical_position.as(:vertical) }
+      rule(:suggestion) { join [position.as(:position), word.as(:word),
+        int.as(:score)], underscore }
+
+      rule(:underscore) { match('_') }
+      rule(:underscored_word) { word >> underscore >> word }
+
+      rule(:position) { horizontal_position.as(:horizontal) |
+        vertical_position.as(:vertical) }
+
       rule(:horizontal_position) { alpha.as(:column) >> int.as(:row) }
       rule(:vertical_position) { int.as(:row) >> alpha.as(:column) }
     end
