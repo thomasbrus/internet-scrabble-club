@@ -45,7 +45,7 @@ module InternetScrabbleClub
       rule(:dashes) { str('---') }
       rule(:null) { str('null') }
 
-      rule(:word) { (digit | alpha | match['_-']).repeat(1) }
+      rule(:word) { (digit | alpha).repeat(1) }
       rule(:sentence) { match['^.'].repeat(1) >> str('.') }
 
       rule(:tiles) { (alpha | str('?')).repeat(1) }
