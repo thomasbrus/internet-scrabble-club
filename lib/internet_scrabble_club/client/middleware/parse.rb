@@ -1,3 +1,4 @@
+require 'parslet'
 require 'celluloid/logger'
 require_relative '../../message_parsers'
 
@@ -14,7 +15,7 @@ module InternetScrabbleClub
           env[:message] = @message_parser.parse(env[:message])
           @stack.call(env)
         rescue Parslet::ParseFailed
-          Celluloid::Logger.debug("Failed to parse message: #{env[:message]}")
+          Celluloid::Logger.warn("Failed to parse message: #{env[:message]}")
         end
       end
 
