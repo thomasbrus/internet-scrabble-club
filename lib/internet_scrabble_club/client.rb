@@ -10,8 +10,6 @@ require_relative 'multi_queue'
 
 require_relative 'client/echo_ping'
 require_relative 'client/keep_alive'
-
-require_relative 'messages'
 require_relative 'client/middleware'
 
 module InternetScrabbleClub
@@ -45,12 +43,13 @@ module InternetScrabbleClub
     end
 
     def authenticate(nickname, password, &callback)
-      send_message(Messages::Request::Login.new(nickname, password), &callback)
+      send_message('LOGIN', nickname, password, 1871, 'HVyHL.YxgQs0EtEtYYQ2uuEm?icRMu0', &callback)
     end
 
-    def send_message(message, &callback)
-      @command_callback_queue.enqueue(message.command, callback)
-      @socket.write("\0" << message.to_s.length << message.to_s)
+    def send_message(command, *arguments, &callback)
+      message = "0 #{([command] + arguments).join(' ')}"
+      @command_callback_queue.enqueue(command.downcase.to_sym, callback)
+      @socket.write("\0" << message.length << message)
     end
 
     def finalize

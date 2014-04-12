@@ -4,8 +4,8 @@ module InternetScrabbleClub
     module EchoPing
       def initialize(*args, &block)
         super; @event_emitter.on(:message) do |message|
-          if Messages::Response::Ping === message
-            send_message(Messages::Request::Ping.new(message.action))
+          if message.command == 'PING' && message.action == 'REPLY'
+            send_message('PING', 'REPLY')
           end
         end
       end
