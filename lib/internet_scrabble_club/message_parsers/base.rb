@@ -32,6 +32,7 @@ module InternetScrabbleClub
       rule(:space?) { space.maybe }
 
       rule(:newline) { match('\n') }
+      rule(:newline?) { newline.maybe }
 
       rule(:colon) { str(':') }
       rule(:semicolon) { str(';') }
@@ -40,13 +41,15 @@ module InternetScrabbleClub
       rule(:digit) { match['0-9'] }
       rule(:alpha) { match['A-Za-z'] }
       rule(:int) { minus.maybe >> digit.repeat(1) }
-      rule(:null) { str('---') }
+
+      rule(:dashes) { str('---') }
+      rule(:null) { str('null') }
 
       rule(:word) { (digit | alpha | match['_-']).repeat(1) }
       rule(:sentence) { match['^.'].repeat(1) >> str('.') }
 
       rule(:tiles) { (alpha | str('?')).repeat(1) }
-      rule(:rack) { null | tiles }
+      rule(:rack) { dashes | tiles }
 
       rule(:month_day) { digit.repeat(1, 2) }
       rule(:abbreviated_month) { match['A-Z'] >> match['a-z'].repeat(2, 2) }
