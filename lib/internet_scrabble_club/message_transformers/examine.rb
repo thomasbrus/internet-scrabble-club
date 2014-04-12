@@ -30,6 +30,13 @@ module InternetScrabbleClub
         OpenStruct.new(direction: :vertical, column: column, row: row)
       end
 
+      rule({ type: 'MOVE', position: simple(:position),
+        word: simple(:word), score: simple(:score)
+      }) do
+        OpenStruct.new({ type: :move, position: position,
+          word: word.to_s, score: Integer(score) })
+      end
+
       rule({ type: 'MOVE', position: simple(:position), word: simple(:word),
         score: simple(:score), rack: simple(:rack)
       }) do
@@ -39,6 +46,18 @@ module InternetScrabbleClub
 
       rule(type: 'PAS') do
         OpenStruct.new(type: :pass)
+      end
+
+      rule(type: 'PAS', suggestion: subtree(:suggestion)) do
+        OpenStruct.new(type: :pass, suggestion: suggestion)
+      end
+
+      rule(position: subtree(:position), word: simple(:word), score: simple(:score)) do
+        OpenStruct.new(position: position, word: word.to_s, score: Integer(score))
+      end
+
+      rule(type: 'CHANGE', rack: simple(:rack)) do
+        OpenStruct.new(type: :change, rack: rack.to_s)
       end
 
       rule(type: 'CHANGE', rack: simple(:rack), swap_count: simple(:swap_count)) do
