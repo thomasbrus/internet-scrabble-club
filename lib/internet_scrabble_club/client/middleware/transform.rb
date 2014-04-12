@@ -5,7 +5,7 @@ module InternetScrabbleClub
     module Middleware
 
       class Transform
-        def initialize(stack, message_transformer = MessageTransformers::Response::Base.new)
+        def initialize(stack, message_transformer = MessageTransformers::Base.new)
           @stack, @message_transformer = stack, message_transformer
         end
 

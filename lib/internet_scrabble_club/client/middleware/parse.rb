@@ -6,7 +6,7 @@ module InternetScrabbleClub
     module Middleware
 
       class Parse
-        def initialize(stack, message_parser = MessageParsers::Response::Base.new)
+        def initialize(stack, message_parser = MessageParsers::Base.new)
           @stack, @message_parser = stack, message_parser
         end
 
