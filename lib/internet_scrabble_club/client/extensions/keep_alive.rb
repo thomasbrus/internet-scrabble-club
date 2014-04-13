@@ -8,7 +8,6 @@ module InternetScrabbleClub
         end
 
         def keep_alive
-          puts "Sending keep alive!"
         end
       end
 
