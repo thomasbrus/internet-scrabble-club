@@ -8,8 +8,8 @@ require 'middleware'
 
 require_relative 'multi_queue'
 
-require_relative 'client/echo_ping'
-require_relative 'client/keep_alive'
+require_relative 'client/extensions/authentication'
+require_relative 'client/extensions/echo_ping'
 require_relative 'client/middleware'
 
 module InternetScrabbleClub
@@ -17,8 +17,9 @@ module InternetScrabbleClub
   class Client
     include Celluloid::IO
 
-    prepend EchoPing
     prepend KeepAlive
+    prepend Extensions::EchoPing
+    prepend Extensions::KeepAlive
 
     finalizer :finalize
 
