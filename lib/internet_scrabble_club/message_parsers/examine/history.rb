@@ -27,10 +27,10 @@ module InternetScrabbleClub
           tiles.as(:word), int.as(:score), _int, _int, rack.as(:rack), _int] }
 
       rule(:change) { delimited [str('CHANGE').as(:word).as(:type), rack.as(:rack),
-          _int, _int, int.as(:swap_count) | dashes] }
+          _int, _int, (dashes | int).as(:swap_count)] }
 
-      rule(:pass) { delimited [str('PAS').as(:word).as(:type), _int, _int, dashes |
-        suggestion.as(:suggestion)] }
+      rule(:pass) { delimited [str('PAS').as(:word).as(:type), _int, _int, (dashes |
+        suggestion).as(:suggestion)] }
 
       rule(:suggestion) { delimited [position.as(:position), word.as(:word),
         int.as(:score)], underscore }
