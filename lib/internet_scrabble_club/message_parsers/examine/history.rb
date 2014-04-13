@@ -7,9 +7,11 @@ module InternetScrabbleClub
       rule(:sub_command) { str('HISTORY') }
 
       rule(:arguments) { join([stats, settings,
-          player_setup.as(:first_player_setup), plays.as(:first_player_plays), str('STOP'),
-          player_setup.as(:second_player_setup), plays.as(:second_player_plays), str('STOP'),
-          nothing], newline_with_whitespace) }
+          (player_setup.as(:setup) >> newline_with_whitespace >> plays.as(:plays)
+          ).as(:first_player), str('STOP'),
+          (player_setup.as(:setup) >> newline_with_whitespace >> plays.as(:plays)
+          ).as(:second_player), str('STOP')
+        ], newline_with_whitespace) >> newline_with_whitespace }
 
       rule(:newline_with_whitespace) { space.repeat >> newline >> space.repeat }
 
@@ -39,8 +41,8 @@ module InternetScrabbleClub
       rule(:position) { horizontal_position.as(:horizontal) |
         vertical_position.as(:vertical) }
 
-      rule(:horizontal_position) { alpha.as(:column) >> int.as(:row) }
-      rule(:vertical_position) { int.as(:row) >> alpha.as(:column) }
+      rule(:horizontal_position) { alpha.as(:word).as(:column) >> int.as(:row) }
+      rule(:vertical_position) { int.as(:row) >> alpha.as(:word).as(:column) }
     end
 
   end

@@ -41,21 +41,22 @@ module InternetScrabbleClub
       rule(:digit) { match['0-9'] }
       rule(:alpha) { match['A-Za-z'] }
 
-      rule(:dashes) { str('---') }
-      rule(:null) { str('null') }
       rule(:int) { _int.as(:int) }
       rule(:_int) { minus.maybe >> digit.repeat(1) }
 
-      rule(:word) { (digit | alpha).repeat(1) }
+      rule(:dashes) { str('---').as(:dashes) }
+      rule(:null) { str('null').as(:null) }
+
+      rule(:word) { (digit | alpha).repeat(1).as(:word) }
       rule(:sentence) { match['^.'].repeat(1) >> str('.') }
 
-      rule(:tiles) { (alpha | str('?')).repeat(1) }
+      rule(:tiles) { (alpha | str('?')).repeat(1).as(:tiles) }
       rule(:rack) { dashes | tiles }
 
       rule(:month_day) { digit.repeat(1, 2) }
       rule(:abbreviated_month) { match['A-Z'] >> match['a-z'].repeat(2, 2) }
       rule(:short_year) { digit >> digit }
-      rule(:date) { join [month_day, abbreviated_month, short_year], colon  }
+      rule(:date) { (join [month_day, abbreviated_month, short_year], colon).as(:date)  }
 
       rule(:dictionary) { str('TWL') | str('SOWPODS') | str('ODS') | str('LOC') |
         str('SWL') | str('PARO') | str('MULTI') }
