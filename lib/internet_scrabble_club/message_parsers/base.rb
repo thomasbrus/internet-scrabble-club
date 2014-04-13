@@ -54,14 +54,14 @@ module InternetScrabbleClub
       rule(:rack) { dashes | tiles }
 
       rule(:month_day) { digit.repeat(1, 2) }
-      rule(:abbreviated_month) { match['A-Z'] >> match['a-z'].repeat(2, 2) }
+      rule(:short_month) { match['A-Z'] >> match['a-z'].repeat(2, 2) }
       rule(:short_year) { digit >> digit }
-      rule(:date) { (join [month_day, abbreviated_month, short_year], colon).as(:date)  }
+      rule(:date) { (delimited [month_day, short_month, short_year], colon).as(:date)  }
 
       rule(:dictionary) { str('TWL') | str('SOWPODS') | str('ODS') | str('LOC') |
         str('SWL') | str('PARO') | str('MULTI') }
 
-      def join(sequence, seperator = space)
+      def delimited(sequence, seperator = space)
         seperators = Array.new(sequence.length - 1) { seperator }
         sequence.zip(seperators).flatten(1).compact.inject(:>>)
       end

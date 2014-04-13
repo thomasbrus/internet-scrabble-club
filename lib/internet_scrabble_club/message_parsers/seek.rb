@@ -5,8 +5,8 @@ module InternetScrabbleClub
 
     class Seek < Base
       rule(:command) { str('SEEK') }
-      rule(:arguments) { join [int.as(:rating), word.as(:nickname), settings] }
-      rule(:settings) { join 7 * [_int] }
+      rule(:arguments) { delimited [int.as(:rating), word.as(:nickname), settings] }
+      rule(:settings) { delimited([_int] * 7) }
     end
 
   end
