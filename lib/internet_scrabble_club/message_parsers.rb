@@ -1,3 +1,5 @@
+require_relative 'message_parsers/close'
+
 require_relative 'message_parsers/examine'
 require_relative 'message_parsers/examine/history'
 
