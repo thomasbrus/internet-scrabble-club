@@ -1,4 +1,4 @@
-# Internet Scrabble Club
+# ISC Ruby client
 
 Ruby client for interacting with the [Internet Scrabble Club](http://www.isc.ro) server.
 
