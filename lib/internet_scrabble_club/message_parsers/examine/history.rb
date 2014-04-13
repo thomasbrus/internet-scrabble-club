@@ -19,7 +19,7 @@ module InternetScrabbleClub
       rule(:settings) { delimited [_int, _int, _int, int.as(:dictionary_code)] }
 
       rule(:player_setup) { delimited [word.as(:nickname), int.as(:rating),
-          rack.as(:initial_rack), int.as(:final_score) | null] }
+          rack.as(:initial_rack), (int | null).as(:final_score)] }
 
       rule(:plays) { ((move | change | pass) >> space?).repeat }
 
