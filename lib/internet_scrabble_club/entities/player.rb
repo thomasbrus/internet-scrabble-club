@@ -4,7 +4,7 @@ module InternetScrabbleClub
   module Entities
 
     class Player
-      include MongoMapper::Document
+      include MongoMapper::EmbeddedDocument
 
       key :nickname, String
       key :rating, Integer
