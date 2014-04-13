@@ -8,6 +8,18 @@ module InternetScrabbleClub
     class Base < Parslet::Transform
       extend DescendantsTracker
 
+      rule(command: simple(:cmd), arguments: subtree(:args)) do
+        OpenStruct.new(args.to_h.merge(command: cmd.to_s))
+      end
+
+      rule(command: simple(:cmd), sub_command: simple(:sub_cmd)) do
+        OpenStruct.new(command: cmd.to_s, sub_command: sub_cmd.to_s)
+      end
+
+      rule(command: simple(:cmd), sub_command: simple(:sub_cmd), arguments: subtree(:args)) do
+        OpenStruct.new(args.to_h.merge(command: cmd.to_s, sub_command: sub_cmd.to_s))
+      end
+
       rule(int: simple(:int)) { Integer(int) }
       rule(word: simple(:word)) { word.to_s }
       rule(date: simple(:date)) { Date.parse(date.to_s) }
