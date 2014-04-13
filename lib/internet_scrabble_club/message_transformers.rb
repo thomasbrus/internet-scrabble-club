@@ -1,4 +1,4 @@
-require_relative 'message_transformers/examine'
+require_relative 'message_transformers/examine/history'
 require_relative 'message_transformers/history'
 require_relative 'message_transformers/login'
 require_relative 'message_transformers/ping'
