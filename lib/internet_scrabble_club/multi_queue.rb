@@ -2,7 +2,7 @@ module InternetScrabbleClub
 
   class MultiQueue
     def initialize
-      @queues = Hash.new { [] }
+      @queues = Hash.new { Array.new }
     end
 
     def enqueue(name, item)
