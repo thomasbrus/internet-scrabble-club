@@ -48,7 +48,8 @@ module InternetScrabbleClub
       rule(:null) { str('null').as(:null) }
 
       rule(:word) { (digit | alpha).repeat(1).as(:word) }
-      rule(:sentence) { match['^.'].repeat(1) >> str('.') }
+      rule(:sentence) { match['^.'].repeat(1) >> str('.').as(:sentence) }
+      rule(:text) { any.repeat(1).as(:text) }
 
       rule(:tiles) { (alpha | str('?')).repeat(1).as(:tiles) }
       rule(:rack) { dashes | tiles }

@@ -21,7 +21,11 @@ module InternetScrabbleClub
       end
 
       rule(int: simple(:int)) { Integer(int) }
+
       rule(word: simple(:word)) { word.to_s }
+      rule(sentence: simple(:sentence)) { sentence.to_s }
+      rule(text: simple(:text)) { text.to_s }
+
       rule(date: simple(:date)) { Date.parse(date.to_s) }
 
       rule(null: simple(:null)) { 0 }
