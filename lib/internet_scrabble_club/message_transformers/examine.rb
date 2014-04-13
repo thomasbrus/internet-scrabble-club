@@ -9,17 +9,16 @@ module InternetScrabbleClub
         OpenStruct.new({command: 'EXAMINE', type: sub_command}.merge(arguments))
       end
 
-      rule({ date: simple(:date), dictionary_code: simple(:dictionary_code),
-        first_player_setup: subtree(:first_player_setup),
-        first_player_plays: subtree(:first_player_plays),
-        second_player_setup: subtree(:second_player_setup),
-        second_player_plays: subtree(:second_player_plays)
-      }) do
-        { date: Date.parse(date.to_s), dictionary_code: dictionary_code,
-          first_player: OpenStruct.new(first_player_setup),
-          second_player: OpenStruct.new(second_player_setup),
-          plays: first_player_plays.zip(second_player_plays).flatten(1),
+      rule(date: simple(:date), dictionary_code: simple(:dictionary_code),
+        first_player: subtree(:first_player), second_player: subtree(:second_player)
+      ) do
+        { date: date, dictionary_code: dictionary_code,
+          first_player: first_player, second_player: second_player
         }
+      end
+
+      rule(setup: subtree(:setup), plays: subtree(:plays)) do
+        OpenStruct.new(setup: setup, plays: plays.map { |play| OpenStruct.new(play) })
       end
 
       rule(horizontal: { column: simple(:column), row: simple(:row) }) do
@@ -29,40 +28,7 @@ module InternetScrabbleClub
       rule(vertical: { column: simple(:column), row: simple(:row) }) do
         OpenStruct.new(direction: :vertical, column: column, row: row)
       end
-
-      rule({ type: 'MOVE', position: simple(:position),
-        word: simple(:word), score: simple(:score)
-      }) do
-        OpenStruct.new({ type: :move, position: position,
-          word: word.to_s, score: Integer(score) })
-      end
-
-      rule({ type: 'MOVE', position: simple(:position), word: simple(:word),
-        score: simple(:score), rack: simple(:rack)
-      }) do
-        OpenStruct.new({ type: :move, position: position, word: word.to_s,
-          score: Integer(score), rack: rack.to_s })
-      end
-
-      rule(type: 'PAS') do
-        OpenStruct.new(type: :pass)
-      end
-
-      rule(type: 'PAS', suggestion: subtree(:suggestion)) do
-        OpenStruct.new(type: :pass, suggestion: suggestion)
-      end
-
-      rule(position: subtree(:position), word: simple(:word), score: simple(:score)) do
-        OpenStruct.new(position: position, word: word.to_s, score: Integer(score))
-      end
-
-      rule(type: 'CHANGE', rack: simple(:rack)) do
-        OpenStruct.new(type: :change, rack: rack.to_s)
-      end
-
-      rule(type: 'CHANGE', rack: simple(:rack), swap_count: simple(:swap_count)) do
-        OpenStruct.new(type: :change, rack: rack.to_s, swap_count: Integer(swap_count))
-      end
     end
+
   end
 end
