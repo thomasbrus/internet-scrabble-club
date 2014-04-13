@@ -10,6 +10,8 @@ require_relative 'multi_queue'
 
 require_relative 'client/extensions/authentication'
 require_relative 'client/extensions/echo_ping'
+require_relative 'client/extensions/keep_alive'
+
 require_relative 'client/middleware'
 
 module InternetScrabbleClub
@@ -17,7 +19,7 @@ module InternetScrabbleClub
   class Client
     include Celluloid::IO
 
-    prepend KeepAlive
+    prepend Extensions::Authentication
     prepend Extensions::EchoPing
     prepend Extensions::KeepAlive
 
@@ -25,6 +27,12 @@ module InternetScrabbleClub
 
     attr_writer :socket, :middleware
     attr_writer :command_callback_queue, :event_emitter
+
+    class InvalidCredentials < StandardError
+      def initialize(message = nil)
+        super(message || "Could not authenticate; the provided credentials are invalid.")
+      end
+    end
 
     def initialize(host = '50.97.175.138', port = 1330)
       @socket = TCPSocket.new(host, port)
@@ -41,10 +49,6 @@ module InternetScrabbleClub
 
     def on_message(&callback)
       @event_emitter.on(:message, &callback)
-    end
-
-    def authenticate(nickname, password, &callback)
-      send_message('LOGIN', nickname, password, 1871, 'HVyHL.YxgQs0EtEtYYQ2uuEm?icRMu0', &callback)
     end
 
     def send_message(command, *arguments, &callback)
