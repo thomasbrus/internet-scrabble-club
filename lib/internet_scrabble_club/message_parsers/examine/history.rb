@@ -13,21 +13,21 @@ module InternetScrabbleClub
 
       rule(:newline_with_whitespace) { space.repeat >> newline >> space.repeat }
 
-      rule(:stats) { int >> space >> date.as(:date) }
-      rule(:settings) { join [int, int, int, int.as(:dictionary_code)] }
+      rule(:stats) { _int >> space >> date.as(:date) }
+      rule(:settings) { join [_int, _int, _int, int.as(:dictionary_code)] }
 
       rule(:player_setup) { join [word.as(:nickname), int.as(:rating),
           rack.as(:initial_rack), int.as(:final_score) | null] }
 
       rule(:plays) { ((move | change | pass) >> space?).repeat }
 
-      rule(:move) { join [str('MOVE').as(:type), position.as(:position),
-          tiles.as(:word), int.as(:score), int, int, dashes | rack.as(:rack), int] }
+      rule(:move) { join [str('MOVE').as(:word).as(:type), position.as(:position),
+          tiles.as(:word), int.as(:score), _int, _int, rack.as(:rack), _int] }
 
-      rule(:change) { join [str('CHANGE').as(:type), rack.as(:rack),
-          int, int, int.as(:swap_count) | dashes] }
+      rule(:change) { join [str('CHANGE').as(:word).as(:type), rack.as(:rack),
+          _int, _int, int.as(:swap_count) | dashes] }
 
-      rule(:pass) { join [str('PAS').as(:type), int, int, dashes |
+      rule(:pass) { join [str('PAS').as(:word).as(:type), _int, _int, dashes |
         suggestion.as(:suggestion)] }
 
       rule(:suggestion) { join [position.as(:position), word.as(:word),

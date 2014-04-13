@@ -40,10 +40,11 @@ module InternetScrabbleClub
 
       rule(:digit) { match['0-9'] }
       rule(:alpha) { match['A-Za-z'] }
-      rule(:int) { minus.maybe >> digit.repeat(1) }
 
       rule(:dashes) { str('---') }
       rule(:null) { str('null') }
+      rule(:int) { _int.as(:int) }
+      rule(:_int) { minus.maybe >> digit.repeat(1) }
 
       rule(:word) { (digit | alpha).repeat(1) }
       rule(:sentence) { match['^.'].repeat(1) >> str('.') }
