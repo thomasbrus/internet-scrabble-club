@@ -47,7 +47,7 @@ module InternetScrabbleClub
     end
 
     def send_message(command, *arguments, &callback)
-      message = "0 #{([command] + arguments).join(' ')}"
+      message = ['0', command, *arguments].join(' ')
       @command_callback_queue.enqueue(command.downcase.to_sym, callback)
       @socket.write("\0" << message.length << message)
     end
