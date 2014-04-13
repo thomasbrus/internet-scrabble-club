@@ -19,11 +19,11 @@ module InternetScrabbleClub
         end
 
         rule(horizontal: { column: simple(:column), row: simple(:row) }) do
-          OpenStruct.new(direction: :horizontal, column: column, row: row)
+          {direction: :horizontal, column: column, row: row}
         end
 
         rule(vertical: { column: simple(:column), row: simple(:row) }) do
-          OpenStruct.new(direction: :vertical, column: column, row: row)
+          {direction: :vertical, column: column, row: row}
         end
       end
 
