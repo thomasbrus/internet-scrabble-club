@@ -16,7 +16,7 @@ module InternetScrabbleClub
       rule(:newline_with_whitespace) { space.repeat >> newline >> space.repeat }
 
       rule(:stats) { _int >> space >> date.as(:date) }
-      rule(:settings) { delimited [_int, _int, _int, int.as(:dictionary_code)] }
+      rule(:settings) { delimited [int.dictionary_code, _int, _int, _int] }
 
       rule(:player_setup) { delimited [word.as(:nickname), int.as(:rating),
           rack.as(:initial_rack), (int | null).as(:final_score)] }
