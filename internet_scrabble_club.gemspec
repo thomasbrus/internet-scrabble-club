@@ -1,7 +1,6 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'internet_scrabble_club'
+# encoding: utf-8
+
+require File.expand_path('../lib/internet_scrabble_club', __FILE__)
 
 Gem::Specification.new do |spec|
   spec.name          = 'internet_scrabble_club'
@@ -27,4 +26,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'events', '~> 0.9'
   spec.add_dependency 'anima', '~> 0.2'
   spec.add_dependency 'middleware', '~> 0.1'
+  spec.add_dependency 'data_mapper', '~> 1.2'
+  spec.add_dependency 'dm-postgres-adapter', '~> 1.2'
+  spec.add_dependency 'dm-validations', '~> 1.2'
+  spec.add_dependency 'rarff', '~> 0.2.2'
 end

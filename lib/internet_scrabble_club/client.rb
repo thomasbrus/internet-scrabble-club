@@ -6,27 +6,21 @@ require 'celluloid/autostart'
 require 'events'
 require 'middleware'
 
-require_relative 'multi_queue'
-
-require_relative 'client/extensions/authentication'
-require_relative 'client/extensions/echo_ping'
-require_relative 'client/extensions/keep_alive'
-
-require_relative 'client/middleware'
+require_relative './client/callback_queue'
+require_relative './client/middleware'
 
 module InternetScrabbleClub
 
   class Client
     include Celluloid::IO
 
-    prepend Extensions::Authentication
-    prepend Extensions::EchoPing
-    prepend Extensions::KeepAlive
-
     finalizer :finalize
 
     attr_writer :socket, :middleware
     attr_writer :command_callback_queue, :event_emitter
+
+    DEFAULT_HOST = '50.97.175.138'
+    DEFAULT_PORT = 1330
 
     class InvalidCredentials < StandardError
       def initialize(message = nil)
@@ -34,44 +28,52 @@ module InternetScrabbleClub
       end
     end
 
-    def initialize(host = '50.97.175.138', port = 1330)
+    def initialize(host = DEFAULT_HOST, port = DEFAULT_PORT)
       @socket = TCPSocket.new(host, port)
-      @command_callback_queue = MultiQueue.new
+      @command_callback_queue = Client::CallbackQueue.new
       @event_emitter = Events::EventEmitter.new
-      @event_emitter.on(:message) { |message| yield_command_callback(message) }
+      @event_emitter.on(:response) { |response| yield_command_callback(response) }
 
       async.run
     end
 
     def run
-      loop { middleware.call({}) }
+      loop { middleware_stack.call({}) }
     end
 
-    def on_message(&callback)
-      @event_emitter.on(:message, &callback)
+    def authenticate(nickname, password, &callback)
+      send_request('LOGIN', nickname, password, 1871, '?', &callback)
     end
 
-    def send_message(command, *arguments, &callback)
-      message = ['0', command, *arguments].join(' ')
-      @command_callback_queue.enqueue(command.downcase.to_sym, callback)
-      @socket.write("\0" << message.length << message)
+    def on_response(command_regex = /.*/, &callback)
+      @event_emitter.on(:response) do |response|
+        callback.call(response) if response[:command] =~ command_regex
+      end
+    end
+
+    def send_request(command, *arguments, &callback)
+      request = ['0', command, *arguments].join(' ')
+      @command_callback_queue.enqueue(command, callback)
+      @socket.write("\0" << request.length << request)
     end
 
     def finalize
       @socket.close if @socket
     end
 
-    private def yield_command_callback(message)
-      command_callback = @command_callback_queue.dequeue(message.command) { proc {} }
-      command_callback.call(message)
+    private def yield_command_callback(response)
+      command_callback = @command_callback_queue.dequeue(response[:command]) { proc {} }
+      command_callback.call(response)
     end
 
-    private def middleware
-      @middleware ||= ::Middleware::Builder.new.tap { |mw|
-        mw.use(Middleware::Read, @socket)
-        mw.use(Middleware::Parse)
-        mw.use(Middleware::Transform)
-        mw.use(Middleware::Emit, @event_emitter)
+    private def middleware_stack
+      @middleware_stack ||= ::Middleware::Builder.new.tap { |mw|
+        mw.use(Middleware::Response::Read, @socket)
+        mw.use(Middleware::Response::Parse)
+        mw.use(Middleware::Response::Transform)
+        mw.use(Middleware::Response::Emit, @event_emitter)
+        mw.use(Middleware::Request::EchoPing, self)
+        mw.use(Middleware::Request::KeepAlive, self)
       }
     end
   end

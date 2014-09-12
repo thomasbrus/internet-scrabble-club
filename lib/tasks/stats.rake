@@ -6,20 +6,20 @@ namespace :stats do
 
   task :players do
     puts format_statistics('Player statistics', [
-      { name: 'Total', value: InternetScrabbleClub.db[:players].count }
+      { name: 'Total', value: InternetScrabbleClub::Models::Player.count }
     ])
   end
 
   task :games do
     puts format_statistics('Game statistics', [
-      { name: 'Total', value: InternetScrabbleClub.db[:games].count }
+      { name: 'Total', value: InternetScrabbleClub::Models::Game.count }
     ])
   end
 
   task :plays do
-    plays_moves_count = InternetScrabbleClub.db[:plays_moves].count
-    plays_passes_count = InternetScrabbleClub.db[:plays_passes].count
-    plays_changes_count = InternetScrabbleClub.db[:plays_changes].count
+    plays_moves_count = InternetScrabbleClub::Models::Plays::Move.count
+    plays_passes_count = InternetScrabbleClub::Models::Plays::Pass.count
+    plays_changes_count = InternetScrabbleClub::Models::Plays::Change.count
 
     puts format_statistics('Play (move, change, pass) statistics', [
       { name: 'Moves', value: plays_moves_count },
