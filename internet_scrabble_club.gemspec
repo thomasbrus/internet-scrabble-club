@@ -26,8 +26,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'events', '~> 0.9'
   spec.add_dependency 'anima', '~> 0.2'
   spec.add_dependency 'middleware', '~> 0.1'
-  spec.add_dependency 'data_mapper', '~> 1.2'
-  spec.add_dependency 'dm-postgres-adapter', '~> 1.2'
-  spec.add_dependency 'dm-validations', '~> 1.2'
-  spec.add_dependency 'rarff', '~> 0.2.2'
 end
