@@ -31,8 +31,11 @@ module InternetScrabbleClub
     def initialize(host = DEFAULT_HOST, port = DEFAULT_PORT)
       @socket = TCPSocket.new(host, port)
       @command_callback_queue = Client::CallbackQueue.new
+
       @event_emitter = Events::EventEmitter.new
       @event_emitter.on(:response) { |response| yield_command_callback(response) }
+
+      Celluloid.every(50) { send_request('SEEK') }
 
       async.run
     end
@@ -73,7 +76,6 @@ module InternetScrabbleClub
         mw.use(Middleware::Response::Transform)
         mw.use(Middleware::Response::Emit, @event_emitter)
         mw.use(Middleware::Request::EchoPing, self)
-        mw.use(Middleware::Request::KeepAlive, self)
       }
     end
   end
